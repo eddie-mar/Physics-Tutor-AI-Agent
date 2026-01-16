@@ -10,6 +10,7 @@ load_dotenv()
 VECTORSTORE = os.getenv('VECTORSTORE', 'vectorstore')
     
 def build_vectorstore_from_openstax(embeddings):
+    ''' This function will scrape the document and create vectorstore '''
     documents = scrape_openstax.scrape_book()
 
     if not documents:

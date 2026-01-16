@@ -16,6 +16,7 @@ VECTORSTORE = os.getenv('VECTORSTORE', 'vectorstore')
 logger = get_logger(name='agent', log_file='agent.log')
 
 def get_vector_store():
+    ''' Returns vectorstore wether built or loaded '''
     if build_vectorstore == 'True':
         build_vectorstore = True
     elif build_vectorstore == 'False':
