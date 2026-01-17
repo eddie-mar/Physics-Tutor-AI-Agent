@@ -56,8 +56,13 @@ class Glossary(AbsStrategy):
         documents = []
 
         for ele in main.find_all('dl'):                         # each key-value pair is an entry
-            term = ele.find('dt').text.strip()
-            definition = ele.find('dd').text.strip()
+            dt = ele.find('dt')
+            dd = ele.find('dd')
+            if not dt or not dd:
+                continue
+
+            term = dt.text.strip()
+            definition = dd.text.strip()
 
             documents.append(
                 Document(
@@ -93,7 +98,7 @@ class SectionSummary(AbsStrategy):
                         'chapter': chapter_title,
                         'type': 'section summary',
                         'subsection': subsection,
-                        'licence': 'CC BY',
+                        'license': 'CC BY',
                     }
                 )
             )
