@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 import requests
 
 from logger import get_logger
-from scraping_utils import get_soup, remove_unnecessary, get_next_link, get_documents
+from scraping_utils.utils import get_soup, remove_unnecessary, get_next_link, get_documents
 
 logger = get_logger(name=__name__, log_file='scraper.log')
 
@@ -65,11 +65,11 @@ def scrape_book(start_url: str = START_URL) -> list[Document]:
             section_content = scrape_url(url)       # returns document and next link
             if section_content['docs']:             # might return empty docs if site <main> is nonexistent
                 all_docs.extend(section_content['docs'])
-            url = section_content['href']           # get next page in the book to scrape
+                logger.info(f'Scraped {url} successfully.')
 
-            logger.info(f'Scraped {url} successfully.')
+            url = section_content['href']           # get next page in the book to scrape
             retries = 3                             # reset retries for successful scrape
-        except requests.exceptions.TimeOut:
+        except requests.exceptions.Timeout:
             retries -= 1 
             logger.error(f'Timeout while scraping {url}')
         except requests.exceptions.RequestException as e:
@@ -79,7 +79,7 @@ def scrape_book(start_url: str = START_URL) -> list[Document]:
             retries -= 1
             logger.error(f'HTTPError for {url}: {e}')
         except RuntimeError as e:
-            logger.error(f'Runtime error occured for {url}. Next link cannot be found.')
+            logger.error(f'Next link not found at {url}. Stopping scraper.')
             break
         except Exception as e:
             retries -= 1

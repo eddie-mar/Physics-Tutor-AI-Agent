@@ -3,3 +3,5 @@ myenv
 logs/
 vectorstore/
 data/
+app/.env
+app/scraping_utils/.env
