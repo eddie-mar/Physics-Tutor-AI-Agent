@@ -5,9 +5,12 @@ from prompt import physics_agent_prompt
 
 def create_physics_agent(llm, vectorstore):
     ''' Creates physics agent chain'''
-    retriever = vectorstore.as_retriever(search_kwargs={'k':3})
+    retriever = vectorstore.as_retriever(
+        search_type='similarity',
+        search_kwargs={'k':3}
+    )
 
-    def format_docs(docs):
+    def format_docs(docs: list) -> str:
         return '\n\n'.join(doc.page_content for doc in docs)
 
     chain = (

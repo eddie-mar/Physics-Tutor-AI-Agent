@@ -24,11 +24,9 @@ Before generating your final response, follow these internal reasoning steps:
 - CLARITY: Use bold terms for key physics concepts to make them scannable.
 - NO FILLER: Avoid introductory pleasantries; go straight to the explanation.
 
-# RESPONSE FORMAT
-[Internal Reasoning - Optional hidden block]
-[Step-by-Step Explanation or Analogy]
-[Variable Definitions - if applicable]
-)
+# REASONING
+Think step-by-step internally, but only provide the final structured explanation.
+
 '''
 )
 
