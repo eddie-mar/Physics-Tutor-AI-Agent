@@ -8,3 +8,4 @@ faiss-cpu
 torch
 requests
 beautifulsoup4
+accelerate

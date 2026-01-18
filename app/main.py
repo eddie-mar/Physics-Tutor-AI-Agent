@@ -4,7 +4,7 @@ import time
 from dotenv import load_dotenv
 from langchain_community.vectorstores import FAISS
 
-from model import llm, embeddings
+from model import get_llm, get_embeddings
 from rag import build_vectorstore_from_openstax
 from agent import create_physics_agent
 from logger import get_logger
@@ -14,9 +14,10 @@ VECTORSTORE = os.getenv('VECTORSTORE', 'vectorstore')
 
 logger = get_logger(name='agent', log_file='agent.log')
 
-def get_vector_store():
+def get_vectorstore():
     ''' Returns vectorstore wether built or loaded '''
-    raw_flag = os.getenv('build_vectorstore', 'false').lower()
+    logger.info('Starting vectorstore retrieval')
+    raw_flag = os.getenv('BUILD_VECTORSTORE', 'false').lower()
 
     if raw_flag in ('true', '1', 'yes'):
         build_vectorstore = True
@@ -32,6 +33,14 @@ def get_vector_store():
 
     if not os.path.abspath(VECTORSTORE).startswith(os.getcwd()):
         raise RuntimeError("Unsafe vectorstore path")
+    
+    try:
+        logger.info('Starting to create embeddings.')
+        embeddings = get_embeddings()
+        logger.info('Embeddings succesfully created.')
+    except Exception as e:
+        logger.error(f'Error initiating embeddings: {e}')
+        raise
 
     if build_vectorstore:
         logger.info('Scraping document and building vectorstore.')
@@ -44,7 +53,7 @@ def get_vector_store():
             logger.error(f'Error scraping documents and building vectorstore: {e}')
             raise
     else:
-        logger.info('Loading pre-built vector database.')
+        logger.info('Loading pre-built vectorstore.')
         try:
             start = time.time()
             vectorstore = FAISS.load_local(
@@ -103,16 +112,28 @@ def agent_loop(llm, vectorstore):
     
 
 if __name__ == '__main__':
+    fail = False
     try:
-        vectorstore = get_vector_store()
+        vectorstore = get_vectorstore()
     except Exception as e:
-        logger.error(f'Error occurred during vectorstore retrieval: {e}. Exiting agent conversation')
-        vectorstore = None
+        logger.error(f'Error occurred during vectorstore retrieval: {e}.\nExiting agent conversation')
+        error = 'Knowledge retrieval error.'
+        fail = True
 
-    if vectorstore:
+    if not fail:
+        try:
+            logger.info('Initiating LLM call.')
+            llm = get_llm()
+            logger.info('LLM succesfully called.')
+        except Exception as e:
+            logger.error(f'Error building LLM: {e}.\nExiting agent conversation')
+            error = 'LLM retrieval error.'
+            fail = True
+
+    if not fail:
         agent_loop(llm, vectorstore)
     else:
-        print('\n\nError occured during agent knowledge retrieval.')
+        print(f'\n\nError occured: {error}')
         print()
         time.sleep(0.5)
         print()
