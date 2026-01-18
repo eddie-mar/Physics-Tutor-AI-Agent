@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from bs4 import BeautifulSoup
 import requests
 
-from docs_strategy import Content, Glossary, SectionSummary
+from scraping_utils.docs_strategy import Content, Glossary, SectionSummary
 
 load_dotenv()
 BASE_URL = os.getenv('BASE_URL', 'https://openstax.org/books/college-physics-2e/pages/')

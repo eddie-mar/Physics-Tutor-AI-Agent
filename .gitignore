@@ -4,4 +4,6 @@ logs/
 vectorstore/
 data/
 app/.env
+app/__pycache__
 app/scraping_utils/.env
+app/scraping_utils/__pycache__
